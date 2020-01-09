@@ -31,10 +31,10 @@ int main() {
         input.push_back(temp);
     }
     int m = input.size();
-    int n = input[0].length();
+    int n = input[0].length();     // each "input[i]"" is a string containing "+--+--+--+" or "|  +  |  "
     cout << m << " " << n << endl;
-    adj adj_list[99999];
-    node graph[99999];
+    adj adj_list[99999];   // adj_list[3] contains sets of pointer to a "node" which are reachable from node "3"
+    node graph[99999];    // graph is set of actual nodes......note that adj_list contains pointer to these graph
     for(int i = 1;i < m - 1;i++) {
         cout << input[i] << endl;
         for(int j = 1;j < n - 1;j++) {
@@ -71,6 +71,7 @@ int main() {
     int source = n + 1;
     int dest = n*(m - 1) - 2;
 
+    // implement bfs
     vector<int> path;
     queue<int> que;
 
