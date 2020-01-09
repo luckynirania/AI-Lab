@@ -90,7 +90,7 @@ int main() {
             adj_list[source].arr[i]->depth = graph[source].depth + 1;
         }
 
-        while(!que.empty() && (que.front()->data != dest)) {
+        while(!que.empty() && (que.front()->data != dest)) { 
             for(int i = 0;i < adj_list[que.front()->data].arr.size();i++) {
                 if(adj_list[que.front()->data].arr[i]->visited == false) {
                     que.push(adj_list[que.front()->data].arr[i]);
@@ -102,6 +102,7 @@ int main() {
             que.pop();
         }
 
+        // backtracking / path retracing (shortest obviously)
         int number = dest;
         int x,y;
         while(input[1][1] != '0') {
