@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <queue> 
+#include <stack>
+#include <fstream>
 
 using namespace std;
 struct node{
@@ -25,7 +27,6 @@ struct adj{
 };
 
 void dfs(node* u,adj* adj_list,int dest,int &states) {
-    // cout << u->data << " \n";
     u->visited = true;
     for(int i = 0;i < adj_list[u->data].arr.size();i++) {
         if((u->data != dest) && adj_list[u->data].arr[i]->visited == false) {
@@ -37,12 +38,13 @@ void dfs(node* u,adj* adj_list,int dest,int &states) {
 }
 
 int main() {
-    int algo;
-    // cin >> algo;
-    algo = 1;
+    ifstream inp;
+    inp.open("input.txt");
     vector<string> input;
     string temp;
-    while(getline(cin, temp) && temp != ""){
+    getline(inp,temp);
+    int algo = stoi(temp);
+    while(getline(inp,temp)) {
         input.push_back(temp);
     }
     int m = input.size();
@@ -90,38 +92,44 @@ int main() {
 
     // implement bfs
     if(algo == 0) {
-        vector<node*> path;
         queue<node*> que;
+        que.push(&graph[source]);
 
-        node* tmp = &graph[source];
-        path.push_back(tmp);
-        graph[source].visited = true;
-        for(int i = 0;i < adj_list[source].arr.size();i++) {
+        while(!que.empty()) { 
+            if(que.front()->data == dest) break;
+            node *tmp = que.front();
+            que.pop();
+            tmp->visited = true;
             states++;
-            que.push(adj_list[source].arr[i]);
-            adj_list[source].arr[i]->visited = true;
-            adj_list[source].arr[i]->depth = graph[source].depth + 1;
-        }
-
-        while(!que.empty() && (que.front()->data != dest)) { 
-            for(int i = 0;i < adj_list[que.front()->data].arr.size();i++) {
-                if(adj_list[que.front()->data].arr[i]->visited == false) {
-                    que.push(adj_list[que.front()->data].arr[i]);
-                    adj_list[que.front()->data].arr[i]->visited = true;
-                    adj_list[que.front()->data].arr[i]->depth = que.front()->depth + 1;
+            for(int i = 0;i < adj_list[tmp->data].arr.size();i++) {
+                if(adj_list[tmp->data].arr[i]->visited == false) {
+                    que.push(adj_list[tmp->data].arr[i]);
+                    adj_list[tmp->data].arr[i]->visited = true;
+                    adj_list[tmp->data].arr[i]->depth = tmp->depth + 1;
                 }
             }
-            states++;
-            que.pop();
         }
     }
 
-    else if(algo == 1) {
-        for(int i = source;i <= dest;i++) {
-            graph[i].visited = false;
-            graph[i].depth = 0;
+    // implement dfs
+    if(algo == 1) {
+        stack <node*> stk;
+        stk.push(&graph[source]);
+
+        while(!stk.empty()) {
+            if(stk.top()->data == dest) break;
+            node* tmp = stk.top();
+            stk.pop();
+            tmp->visited = true;
+            states++;
+            for(int i = adj_list[tmp->data].arr.size() - 1;i >= 0;i--) {
+                if(adj_list[tmp->data].arr[i]->visited == false) {
+                    adj_list[tmp->data].arr[i]->visited = true;
+                    adj_list[tmp->data].arr[i]->depth = tmp->depth + 1;
+                    stk.push(adj_list[tmp->data].arr[i]);
+                }
+            }
         }
-        dfs(&graph[source],adj_list,dest,states);
     }
 
     // backtracking / path retracing (shortest obviously)
