@@ -25,9 +25,10 @@ struct adj{
 };
 
 void dfs(node* u,adj* adj_list,int dest,int &states) {
+    // cout << u->data << " \n";
     u->visited = true;
     for(int i = 0;i < adj_list[u->data].arr.size();i++) {
-        if(adj_list[u->data].arr[i]->visited == false && (u->data != dest)) {
+        if((u->data != dest) && adj_list[u->data].arr[i]->visited == false) {
             states++;
             adj_list[u->data].arr[i]->depth = u->depth + 1;
             dfs(adj_list[u->data].arr[i], adj_list,dest,states);
@@ -38,7 +39,7 @@ void dfs(node* u,adj* adj_list,int dest,int &states) {
 int main() {
     int algo;
     // cin >> algo;
-    algo = 0;
+    algo = 1;
     vector<string> input;
     string temp;
     while(getline(cin, temp) && temp != ""){
@@ -85,10 +86,10 @@ int main() {
     // }
     int source = 0;
     int dest = n*(m - 1) - 1;
+    int states = 1;
 
     // implement bfs
     if(algo == 0) {
-        int states = 1  ;
         vector<node*> path;
         queue<node*> que;
 
@@ -113,125 +114,70 @@ int main() {
             states++;
             que.pop();
         }
-
-        // backtracking / path retracing (shortest obviously)
-        int number = dest;
-        int x,y;
-        while(input[1][1] != '0') {
-            x = number / n;
-            y = number % n;
-            input[x][y] = '0'; 
-            int dep = graph[number].depth - 1;
-            for(int i = 0;i < 4;i++) {
-                if(graph[number - 1].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number - 1].arr.size();j++) {
-                        if(adj_list[number - 1].arr[j]->data == number) {
-                            present = true;
-                            number = number - 1;
-                            break;
-                        }
-                    }
-                }
-                if(graph[number + 1].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number + 1].arr.size();j++) {
-                        if(adj_list[number + 1].arr[j]->data == number) {
-                            present = true;
-                            number = number + 1;
-                            break;
-                        }
-                    }
-                }
-                if(graph[number - n].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number - n].arr.size();j++) {
-                        if(adj_list[number - n].arr[j]->data == number) {
-                            present = true;
-                            number = number - n;
-                            break;
-                        }
-                    }
-                }
-                if(graph[number + n].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number + n].arr.size();j++) {
-                        if(adj_list[number + n].arr[j]->data == number) {
-                            present = true;
-                            number = number + n;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        cout << "states explored\t" << states << endl;
-        cout << "length of path\t" << graph[dest].depth + 1 << endl; // + 1 bcoz counting from 0
     }
+
     else if(algo == 1) {
-        int states = 0;
         for(int i = source;i <= dest;i++) {
             graph[i].visited = false;
             graph[i].depth = 0;
         }
-        for(int i = source;i <= dest;i++) dfs(&graph[i],adj_list,dest,states);
-        
-        
-        // backtracking / path retracing (shortest obviously)
-        int number = dest;
-        int x,y;
-        while(input[1][1] != '0') {
-            x = number / n;
-            y = number % n;
-            input[x][y] = '0'; 
-            int dep = graph[number].depth - 1;
-            for(int i = 0;i < 4;i++) {
-                if(graph[number - 1].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number - 1].arr.size();j++) {
-                        if(adj_list[number - 1].arr[j]->data == number) {
-                            present = true;
-                            number = number - 1;
-                            break;
-                        }
+        dfs(&graph[source],adj_list,dest,states);
+    }
+
+    // backtracking / path retracing (shortest obviously)
+    int number = dest;
+    int x,y;
+    while(input[1][1] != '0') {
+        x = number / n;
+        y = number % n;
+        input[x][y] = '0'; 
+        int dep = graph[number].depth - 1;
+        for(int i = 0;i < 4;i++) {
+            if(graph[number - 1].depth == dep) {
+                bool present = false;
+                for(int j = 0;j < adj_list[number - 1].arr.size();j++) {
+                    if(adj_list[number - 1].arr[j]->data == number) {
+                        present = true;
+                        number = number - 1;
+                        break;
                     }
                 }
-                if(graph[number + 1].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number + 1].arr.size();j++) {
-                        if(adj_list[number + 1].arr[j]->data == number) {
-                            present = true;
-                            number = number + 1;
-                            break;
-                        }
+            }
+            if(graph[number + 1].depth == dep) {
+                bool present = false;
+                for(int j = 0;j < adj_list[number + 1].arr.size();j++) {
+                    if(adj_list[number + 1].arr[j]->data == number) {
+                        present = true;
+                        number = number + 1;
+                        break;
                     }
                 }
-                if(graph[number - n].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number - n].arr.size();j++) {
-                        if(adj_list[number - n].arr[j]->data == number) {
-                            present = true;
-                            number = number - n;
-                            break;
-                        }
+            }
+            if(graph[number - n].depth == dep) {
+                bool present = false;
+                for(int j = 0;j < adj_list[number - n].arr.size();j++) {
+                    if(adj_list[number - n].arr[j]->data == number) {
+                        present = true;
+                        number = number - n;
+                        break;
                     }
                 }
-                if(graph[number + n].depth == dep) {
-                    bool present = false;
-                    for(int j = 0;j < adj_list[number + n].arr.size();j++) {
-                        if(adj_list[number + n].arr[j]->data == number) {
-                            present = true;
-                            number = number + n;
-                            break;
-                        }
+            }
+            if(graph[number + n].depth == dep) {
+                bool present = false;
+                for(int j = 0;j < adj_list[number + n].arr.size();j++) {
+                    if(adj_list[number + n].arr[j]->data == number) {
+                        present = true;
+                        number = number + n;
+                        break;
                     }
                 }
             }
         }
-        cout << "states explored\t" << states << endl;
-        cout << "length of path\t" << graph[dest].depth + 4 << endl; // + 4 beacuse 0,0 0,1 and * position is not counted and also counting from 0
-        
     }
+    cout << "states explored\t" << states << endl;
+    cout << "length of path\t" << graph[dest].depth + 1 << endl; // + 1 bcoz counting from 0
+    
     input[0][0] = '0';
     input[1][0] = '0';
     for(int i = 0;i < input.size();i++) {
