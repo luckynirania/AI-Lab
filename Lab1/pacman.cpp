@@ -6,14 +6,19 @@
 #include <fstream>
 
 using namespace std;
+int states = 1;
+int arpit;
+bool flag = false;
 
 struct position {
     int data;
     position* parent;
+    int depth;
     bool visited;
     position() {
         parent = NULL;
         visited = false;
+        depth = 99999;
     }
 };
 
@@ -27,9 +32,27 @@ struct adj {
     }
 };
 
-int main() {
+void dfid(position* start,adj* adj_list,int depth,int dest,position* node) {
+    if(start->depth < depth) {
+        start->visited = true;
+        if (start->data == dest) {
+            arpit = states;
+        }
+        states++;
+        for(int i = 0;i < adj_list[start->data].arr.size();i++) {
+            if((adj_list[start->data].arr[i]->depth > start->depth + 1)) {
+                adj_list[start->data].arr[i]->parent = start;
+                adj_list[start->data].arr[i]->depth = start->depth + 1;
+                dfid(adj_list[start->data].arr[i],adj_list,depth,dest,node);
+            }
+        }
+    }
+    return;
+}
+
+int main(int argc, char* argv[]) {
     ifstream inp;
-    inp.open("input.txt");
+    inp.open(argv[1]);
     vector<string> input;
     string temp;
     getline(inp,temp);
@@ -60,12 +83,12 @@ int main() {
             }
         }
     }
-    int states = 1;
     int length = 1;
 
     //BFS
     if(algo == 0) {
         queue<position*> que;
+        node[source].depth = 0;
         que.push(&node[source]);
         
         while(!que.empty()) {
@@ -87,6 +110,7 @@ int main() {
     //DFS
     if(algo == 1) {
         stack<position*> que;
+        node[source].depth = 0;
         que.push(&node[source]);
         
         while(!que.empty()) {
@@ -104,8 +128,21 @@ int main() {
             if(que.top()->data == dest) break;
         }
     }
-    if(algo == 2) {
 
+    //DFID
+    if(algo == 2) {
+        node[source].depth = 0;
+        for(int i = 0;i < m*n;i++) {
+            
+            dfid(&node[source],adj_list, i,dest,node);
+            for(int j = 0;j < m*n;j++) {
+                node[j].depth = 99999;
+                node[i].visited = false;
+                node[i].parent = NULL;
+            }
+            node[source].depth = 0;
+            if(node[dest].visited == true) break;
+        }
     }
 
     position* path = &node[dest];
@@ -117,7 +154,8 @@ int main() {
         path = path->parent;
         length++;
     }
-
+    input[0][0] = '0';
+    if(algo == 2) states= arpit - 1;
     cout << states << endl << length << endl;
     for(int i = 0;i < input.size(); i++) cout << input[i] << endl;
 }
