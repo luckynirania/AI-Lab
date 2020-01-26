@@ -1,5 +1,6 @@
 import copy
 class state:
+    cost = 0
     childs = set()
     poles = [[],[],[]]
 
@@ -20,7 +21,7 @@ adj_list = []
 
 node = state()
 
-discs = 3
+discs = 2
 ls = []
 for i in range(0,discs):
     ls.append(discs - i)
@@ -54,6 +55,6 @@ while(size != len(adj_list)):
                                 adj_list.append(temp)
                             ref_state.childs.add(ind)
 
-# for x in adj_list:
-#     print(x.childs)
-#     d_s(x)
+for x in adj_list:
+    print(x.childs)
+    d_s(x)
