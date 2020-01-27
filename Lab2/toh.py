@@ -330,7 +330,7 @@ adj_list = []
 
 node = state()
 
-discs = 6
+discs = 3
 ls = []
 for i in range(0,discs):
     ls.append(discs - i)
