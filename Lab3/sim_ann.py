@@ -61,7 +61,7 @@ while(T > 0):       # varying T from 500 to 1
 
     T_list.append(path_length)
     path.append(visited)
-    # print("T: ",T," ",visited)
+    print("T: ",T," ",visited,"\t",path_length)
     T = T - 1
 
 temp = min(T_list)
