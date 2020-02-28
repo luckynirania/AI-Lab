@@ -1,5 +1,6 @@
 import math
 import random
+# import matplotlib.pyplot as plt
 
 euc = True
 file_name = input()
@@ -19,7 +20,7 @@ class cities:
 
 city = []
 
-for i in range(0,100):
+for i in range(0,n):
     temp = cities()
     row = data[i + 2].split()
     temp.x = float(row[0])
@@ -27,87 +28,76 @@ for i in range(0,100):
     temp.index = int(i)
     temp.distance = data[i + n + 2].split()
     city.append(temp)
-    
-def delta_E(a,b):
-    return(float(a.distance[b.index]))
 
 def prob(E,T):
     return( 1 / ( 1 + ( math.exp( (-1)*(E)/(T) ) ) ) )
 
-T = 9999
-pos = 0       # start from jth city
+def path_length(ls):
+    ret = float(0)
+    for i in range(1,n):
+        ret = ret + float(city[ls[i]].distance[ls[i-1]])
+    ret = ret + float(city[ls[0]].distance[ls[len(ls)-1]])
+    return ret
 
-T_list = []
-path = []
+def graph(ls):
+    x = []
+    y = []
+    for i in range(0,len(ls)):
+        x.append(city[ls[i]].x)
+        y.append(city[ls[i]].y)
+    x.append(x[0])
+    y.append(y[0])
+    plt.plot(x,y,marker='o', markerfacecolor='blue', markersize=5)
+    plt.pause(0.00001)
+    plt.draw()
+    plt.clf()
 
-while(T > 0):       # varying T from 500 to 1
-    pos = 0
-    visited = []
-    path_length = float(0)
-    for i in range(0,99):
-        visited.append(pos)
-        while(True):
-            while(True):
-                dest = random.randrange(0,100,1)
-                if(dest not in visited):
-                    break        
+T = n
 
-            prob_dest = prob(delta_E(city[pos],city[dest]),T)
-            prob_mine = random.random()
-            if(prob_dest > prob_mine):
-                path_length = path_length + float(city[pos].distance[dest])
-                pos = dest
-                break
+path = list(range(0,n))
 
-    T_list.append(path_length)
-    path.append(visited)
-    print("T: ",T," ",visited,"\t",path_length)
+# print(path,"\t",path_length(path),"\n\n")
+
+br = 0
+while(T > 0.09):
+    pre_pl = path_length(path)
+
+    # graph(path)
+
+    # randomly swapping two cities
+    time = 0 
+    final = n*10
+    if n > 100:
+        final = n
+    for sth in range(0,final):   # can replce final with n*n for best result (but time consuming)
+        temp_path = path.copy()
+
+        start,end = random.randrange(1,n,1),random.randrange(1,n,1)
+        temp_path[start],temp_path[end] = temp_path[end],temp_path[start]
+        
+        cost = (path_length(temp_path) - path_length(path))
+
+        if(random.random() > prob(cost,T)): # allow probabiliticly
+            path = temp_path
+            time = time + 1
+
+        # if(time == 1):
+        #     break
+            
+    if(pre_pl == path_length(path)):
+        br = br + 1
+    else:
+        br = 0
+    if(br > 10):
+        break
+
+    # print(T,"\t",path_length(path))
+
     T = T - 1
 
-temp = min(T_list)
-print(T_list.index(temp),"\t",temp)
-# print("Path\t",path[T_list.index(temp)])
+print(path_length(path))
+for i in path:
+    print(i,end=' ')
+print()
 
-
-
-
-
-
-
-
-
-
-
-
-
-# print("Start\tT\tpath")
-# for j in range(0,100):
-#     T = 9999
-#     pos = j        # start from jth city
-
-#     T_list = []
-
-#     while(T > 0):       # varying T from 500 to 1
-#         visited = []
-#         path_length = float(0)
-#         for i in range(0,99):
-#             visited.append(pos)
-#             while(True):
-#                 while(True):
-#                     dest = random.randrange(0,100,1)
-#                     if(dest not in visited):
-#                         break        
-
-#                 prob_dest = prob(delta_E(city[pos],city[dest]),T)
-#                 prob_mine = random.random()
-#                 if(prob_dest > prob_mine):
-#                     path_length = path_length + float(city[pos].distance[dest])
-#                     pos = dest
-#                     break
-
-#         T_list.append(path_length)
-#         # print("T: ",T," ",path_length)
-#         T = T - 1
-
-#     temp = min(T_list)
-#     print(j,"\t",T_list.index(temp),"\t",temp)
+# print(path,"\t",path_length(path))
