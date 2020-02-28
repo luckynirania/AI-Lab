@@ -22,4 +22,24 @@ def deepcopy(a):
     return node
 
 def movegen(state):
-    return True
+    ls = []
+    for i in range(0,3):
+        for j in range(0,3):
+            if(i != j):
+                if(len(state.poles[i]) != 0):
+                    if(len(state.poles[j]) == 0 or ((len(state.poles[j]) != 0) and (state.poles[j] > state.poles[i]))):
+                        new = deepcopy(state)
+                        new.poles[j].append(state.poles[i][-1])
+                        del new.poles[i][-1]
+                        ls.append(new)
+    return ls
+
+st = state()
+
+st.poles = [[1,2,3],[],[]]
+
+display(st)
+ls = movegen(st)
+
+for i in ls:
+    display(i)
