@@ -10,6 +10,7 @@ class state:
 
 def display(state):
     i = 0
+    print('Cost: ', state.cost)
     for pole in state.poles:
         print(i," -> ",pole)
         i = i + 1
@@ -34,12 +35,104 @@ def movegen(state):
                         ls.append(new)
     return ls
 
-st = state()
+def cost(state):
+    for i in range(0,3):
+        for j in state.poles[i]:
+            state.cost = state.cost + (i+1)*j
 
-st.poles = [[1,2,3],[],[]]
+def cost1(state, discs):
+    for i in range(0,3):
+        for j in range(len(state.poles[i])):
+            if i % 2 == 0:
+                if discs % 2 == 0:
+                    if (j == 0 and state.poles[i][j] % 2 == 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("A ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (i+1)*state.poles[i][j]*(j+1)
+                    else:
+                        # print("B ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (i+1)*state.poles[i][j]*(j+1)
+                else:
+                    if (j == 0 and state.poles[i][j] % 2 != 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("C ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (i+1)*state.poles[i][j]*(j+1)
+                    else:
+                        # print("D ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (i+1)*state.poles[i][j]*(j+1)
+            else:
+                if discs % 2 == 0:
+                    if (j == 0 and state.poles[i][j] % 2 != 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("E ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (i+1)*state.poles[i][j]*(j+1)
+                    else:
+                        # print("F ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (i+1)*state.poles[i][j]*(j+1)
+                else:
+                    if (j == 0 and state.poles[i][j] % 2 == 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("G ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (i+1)*state.poles[i][j]*(j+1)
+                    else:
+                        # print("H ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (i+1)*state.poles[i][j]*(j+1)
+            # print(state.cost)
+    d = discs
+    # print(state.poles)
+    for j in range(len(state.poles[0])):
+        if d == state.poles[0][j]:
+            # print("j: ", state.poles[0][j])
+            state.cost = state.cost - state.poles[0][j]*(j+1)
+            d = d - 1
+
+def cost2(state,discs):
+    for i in range(0,3):
+        for j in range(len(state.poles[i])):
+            if i % 2 == 0:
+                if discs % 2 == 0:
+                    if (j == 0 and state.poles[i][j] % 2 == 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("A ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (j+1)
+                    else:
+                        # print("B ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (j+1)
+                else:
+                    if (j == 0 and state.poles[i][j] % 2 != 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("C ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (j+1)
+                    else:
+                        # print("D ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (j+1)
+            else:
+                if discs % 2 == 0:
+                    if (j == 0 and state.poles[i][j] % 2 != 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("E ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (j+1)
+                    else:
+                        # print("F ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (j+1)
+                else:
+                    if (j == 0 and state.poles[i][j] % 2 == 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
+                        # print("G ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost + (j+1)
+                    else:
+                        # print("H ", i+1, state.poles[i][j], j+1)
+                        state.cost = state.cost - (j+1)
+            # print(state.cost)
+    d = discs
+    # print(state.poles)
+    for j in range(len(state.poles[0])):
+        if d == state.poles[0][j]:
+            # print("j: ", state.poles[0][j], j)
+            state.cost = state.cost - (j+1)
+            # print(state.cost)
+            d = d - 1
+
+st = state()
+discs = 3
+st.poles = [[3,2,1],[],[]]
+cost2(st,discs)
 
 display(st)
 ls = movegen(st)
 
 for i in ls:
+    cost2(i,discs)
     display(i)
