@@ -215,7 +215,7 @@ def GENETIC_ALGO(k_weakest,generations,popu_size,ph,upb):
                 print(i,end=' ')
             # file.close()
             print()
-            # print(gen+1,"\t",now_best)
+            print(gen+1,"\t",now_best)
     return solution
 
 path = list(range(0,n))
@@ -245,6 +245,7 @@ for i in range(0,n):
 diff = diff / n
 
 T = diff / 7
+T_not = T
 
 # print(path,"\t",path_length(path),"\n\n")
 
@@ -255,7 +256,9 @@ solution.append(path)
 
 old_pl = path_length(path)
 new_pl = path_length(solution[-1])
+run = 0
 while(T > 0.09):
+    run = run + 1
     pre_pl = path_length(path)
 
     # graph(path)
@@ -275,6 +278,7 @@ while(T > 0.09):
         new_pl = path_length(temp_path)
 
         if(new_pl < old_pl):
+            print(new_pl)
             solution.append(temp_path)
             # file = open("result.txt","w")
             for i in solution[-1]:
@@ -301,8 +305,13 @@ while(T > 0.09):
         break
 
     # print(T,"\t",path_length(path))
+    if n > 100 and n < 500:
+        T = T_not * math.exp(-0.005* run)
+    if n < 101:
+        T = T_not * math.exp(-0.003* run)
+    if n > 499:
+        T = T_not * math.exp(-0.009* run)
 
-    T = T * 0.991
 if n < 101:
     k_replace = 0.8
     generations_run = n*n                # n*n for best result
