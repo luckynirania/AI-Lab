@@ -1,10 +1,8 @@
 import copy
-import queue
+import random
 class state:
     childs = []
     poles = [[],[],[]]
-    visited = False
-    explored = False
     parent = -1
     index = -1
     g = 0
@@ -16,7 +14,6 @@ class state:
         return False
 
 state_set = []
-
 
 def display(state):
     i = 0
@@ -51,72 +48,66 @@ def movegen(state):
 def reconstruct_path(index):
     ls = [index]
     temp = index
-    while(state_set[temp].parent != -1):
-        # print(temp, end=" ")
+    while(state_set[temp].parent != state_set[temp].index):
+        # print(temp)
         temp = state_set[temp].parent
         ls.append(temp)
-    # ls = ls.reverse()
-    # print()
+    ls.reverse()
     return ls
-ref = 0
-ref1 = 0
-ref2 = 0
 
 def cost(state):
-    cost = 0
+    cost = discs*discs
     for i in range(0,3):
         for j in state.poles[i]:
             cost = cost + (i+1)*j
     return cost
 
-def cost1(state, discs, ref1):
-    cost = 0
+def cost1(state, discs):
+    cost = discs*discs
     for i in range(0,3):
         for j in range(len(state.poles[i])):
             if i % 2 == 0:
                 if discs % 2 == 0:
                     if (j == 0 and state.poles[i][j] % 2 == 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
                         # print("A ", i+1, state.poles[i][j], j+1)
-                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
                     else:
                         # print("B ", i+1, state.poles[i][j], j+1)
-                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
                 else:
                     if (j == 0 and state.poles[i][j] % 2 != 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
                         # print("C ", i+1, state.poles[i][j], j+1)
-                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
                     else:
                         # print("D ", i+1, state.poles[i][j], j+1)
-                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
             else:
                 if discs % 2 == 0:
                     if (j == 0 and state.poles[i][j] % 2 != 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
                         # print("E ", i+1, state.poles[i][j], j+1)
-                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
                     else:
                         # print("F ", i+1, state.poles[i][j], j+1)
-                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
                 else:
                     if (j == 0 and state.poles[i][j] % 2 == 0) or (j != 0 and (state.poles[i][j-1] - state.poles[i][j]) % 2 != 0):
                         # print("G ", i+1, state.poles[i][j], j+1)
-                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
                     else:
                         # print("H ", i+1, state.poles[i][j], j+1)
-                        cost = cost - (i+1)*state.poles[i][j]*(j+1)
+                        cost = cost + (i+1)*state.poles[i][j]*(j+1)
             # print(state.cost)
     d = discs
     # print(state.poles)
     for j in range(len(state.poles[0])):
         if d == state.poles[0][j]:
             # print("j: ", state.poles[0][j])
-            cost = cost - state.poles[0][j]*(j+1)
+            cost = cost + state.poles[0][j]*(j+1)
             d = d - 1
-    if ref1 > 0:
-        cost = ref1 - cost
     return cost
 
-def cost2(state, discs, ref2):
-    cost = 0
+def cost2(state, discs):
+    cost = discs*discs
     for i in range(0,3):
         for j in range(len(state.poles[i])):
             if i % 2 == 0:
@@ -158,127 +149,121 @@ def cost2(state, discs, ref2):
             cost = cost - (j+1)
             # print(state.cost)
             d = d - 1
-    if ref2 > 0:
-        cost = ref2 - cost
     return cost
 
-start = state()
-goal = state()
+def PropImp(m,CLOSED):
+    # print("prpp")
+    neighbours = movegen(state_set[m])
+    for s in neighbours:
+        new_g = state_set[m].g + 1
+        if new_g < state_set[s].g:
+            state_set[s].g = new_g
+            if s in CLOSED:
+                PropImp(s,CLOSED)
 
 discs = int(input())
 
-def PropagateImprovement(m):
-    neighbours = movegen(m)
-    for index in neighbours:
-        s = state_set[index]
-        new_g = m.g + s.h - m.h
-        if new_g < s.g:
-            s.parent = m.index
-            s.g = new_g
-            if s.index in CLOSED:
-                PropagateImprovement(s)
+for i in range(0,3):
+    state_set = []
 
-for heuristic in range(2,-1,-1):
-    if heuristic == 0:
-        print("heuristic : monotone ")
-    if heuristic == 1:
-        print("heuristic : over estimate")
-    if heuristic == 2:
-        print("heuristic : under estimate")
-    ls = []
-    for i in range(0,discs):
-        ls.append(i+1)
-
+    ls = list(range(1,discs+1))
     ls.reverse()
 
+    start = state()
+    start.parent = 0
+    start.index = 0
     start.poles = [ls,[],[]]
-    start.parent = -1
-    goal.poles = [[],[],ls]
 
     state_set.append(start)
-    start.index = 0
+
+    goal = state()
+    goal.index = 1
+    goal.poles = [[],[],ls]
 
     state_set.append(goal)
-    goal.index = 1
 
-    ref = cost(goal)
-    ref1 = cost1(goal, discs, ref1)
-    ref2 = cost2(goal, discs, ref2)
-
-    # print(cost(start,discs, ref), cost(goal,discs, ref))
-    # print(cost1(start, discs, ref1), cost1(goal, discs, ref1))
-    # print(cost2(start, discs, ref2), cost2(goal, discs, ref2))
-    # print()
-
-    # display(start)
+    ref = 0
+    if i == 0:
+        ref = cost(goal)
+        print("Normal Funciton ")
+        print(ref - cost(start),ref - cost(goal))
+        start.h = ref - cost(start)
+        goal.h = ref - cost(goal)
+    if i == 1:
+        ref = cost1(goal, discs)
+        print("Over estimate")
+        start.h = -1* (ref - cost1(start, discs))
+        goal.h = -1* (ref - cost1(goal, discs))
+        print(start.h, goal.h)
+    if i == 2:
+        ref = cost2(goal, discs)
+        print("Under estimate")
+        print(ref - cost2(start, discs),ref - cost2(goal, discs))
+        start.h = ref - cost2(start, discs)
+        goal.h = ref - cost2(goal, discs)
 
     OPEN = []
     CLOSED = []
-    if heuristic == 0:
-        start.h = cost(start)
-    if heuristic == 1:
-        start.h = cost1(start,discs,ref1)
-    if heuristic == 2:
-        start.h = cost2(start,discs,ref2)
+
+    path = []
 
     start.f = start.h
     OPEN.append(start.index)
 
-    path = []
-
     while(len(OPEN) != 0):
-        OPEN.sort(key=lambda x: state_set[x].f)
-        # print(OPEN)
+        OPEN.sort(key = lambda x: state_set[x].f)
         n = OPEN[0]
-        # print("loki - ",len(OPEN))
+        nem = state_set[n]
         del OPEN[0]
-        # print(n, goal.index)
+        CLOSED.append(n)
         if n == goal.index:
-            CLOSED.append(n)
             print("goal reached")
             path = reconstruct_path(n)
             break
-        n = state_set[n]
-        neighbours = movegen(n)
-        
-        CLOSED.append(n.index)
+        neighbours = movegen(nem)
         for m in neighbours:
-            m = state_set[m]
-            # print((cost(m) - cost(n)), " ---- ", (m.h - n.h))
-            if heuristic == 0:
-                costi =  (m.h - n.h) + 1
-            else:
-                costi = (m.h - n.h)
-            if m.index in OPEN:
-                # print("in op")
-                if(m.g > n.g + costi):
-                    m.parent = n.index
-                    m.g = n.g + costi
-                    m.f = m.g + m.h
-            if m.index in CLOSED:
-                # print("in clo")
-                if(m.g > n.g + costi):
-                    m.parent = n.index
-                    m.g = n.g + costi
-                    m.f = m.g + m.h
-                    if heuristic != 0:
-                        PropagateImprovement(m)
-            if m.index not in OPEN and m.index not in CLOSED:
-                # print("not op not clo")
-                if heuristic == 0:
-                    m.h = cost2(m,discs,ref2)
-                if heuristic == 1:
-                    m.h = cost1(m,discs,ref1)
-                if heuristic == 2:
-                    m.h = cost2(m,discs,ref2)
-                # m.h = cost1(m,discs,ref1)
-                m.parent = n.index
-                m.g = n.g + (m.h - n.h)
-                m.f = m.g + m.h
-                OPEN.append(m.index)
+            mem = state_set[m]
+            knm = 1
+            if i == 1:
+                knm = cost(mem) - cost(nem)
+            if m in OPEN:
+                # print("mem in OPEN")
+                if(nem.g + knm < mem.g):
+                    mem.parent = n
+                    mem.g = nem.g + knm
+                    mem.f = mem.g + mem.h
+            if m in CLOSED:
+                # print("mem in CLOSED")
+                if(nem.g + knm < mem.g):
+                    mem.parent = n
+                    mem.g = nem.g + knm
+                    mem.f = mem.g + mem.h
+                    PropImp(m,CLOSED)
+            if m not in OPEN and m not in CLOSED:
+                # print("mem is NEW")
+                OPEN.append(m)
+                if i == 0:
+                    mem.h = ref - cost(mem)
+                if i == 1 and mem.index != goal.index:
+                    mem.h = (ref - cost1(mem, discs)) + 2*(start.h)
+                if i == 2:
+                    mem.h = ref - cost2(mem, discs)
+                mem.parent = n
+                mem.g = nem.g + knm
+                mem.f = mem.g + mem.h
 
-    path.reverse()
+    # for item in state_set:
+    #     print(item.index, item.h, item.g)
+    print("path length = ",len(path))
+    print("path     -> ",path)
 
-    print("length of path = ", len(path))
-    print(path)
-    print("-----------------------------------------------------")
+    ls = list(map(lambda x: state_set[x].h,path))
+    print("h-values -> ",ls)
+
+    ls = list(map(lambda x: state_set[x].g,path))
+    print("g-values -> ",ls)
+
+    ls = list(map(lambda x: state_set[x].f,path))
+    print("f-values -> ",ls)
+
+    print("---------------------------------")
