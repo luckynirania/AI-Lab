@@ -215,7 +215,7 @@ def GENETIC_ALGO(k_weakest,generations,popu_size,ph,upb):
                 print(i,end=' ')
             # file.close()
             print()
-            print(gen+1,"\t",now_best)
+            # print(gen+1,"\t",now_best)
     return solution
 
 path = list(range(0,n))
