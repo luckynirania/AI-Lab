@@ -278,7 +278,7 @@ while(T > 0.09):
         new_pl = path_length(temp_path)
 
         if(new_pl < old_pl):
-            print(new_pl)
+            # print(new_pl)
             solution.append(temp_path)
             # file = open("result.txt","w")
             for i in solution[-1]:
