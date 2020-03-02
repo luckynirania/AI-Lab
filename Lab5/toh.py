@@ -155,7 +155,7 @@ def PropImp(m,CLOSED):
     # print("prpp")
     neighbours = movegen(state_set[m])
     for s in neighbours:
-        new_g = state_set[m].g + 1
+        new_g = state_set[m].g + cost(state_set[m]) - cost(state_set[n])
         if new_g < state_set[s].g:
             state_set[s].g = new_g
             if s in CLOSED:
@@ -224,8 +224,8 @@ for i in range(0,3):
         for m in neighbours:
             mem = state_set[m]
             knm = 1
-            if i == 1:
-                knm = cost(mem) - cost(nem)
+            # if i == 1:
+            knm = cost(mem) - cost(nem)
             if m in OPEN:
                 # print("mem in OPEN")
                 if(nem.g + knm < mem.g):
