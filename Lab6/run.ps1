@@ -1,0 +1,1 @@
+$lines = cat .\test; foreach($line in $lines) {echo $line; echo $line | py .\ao_star.py; echo ""}
