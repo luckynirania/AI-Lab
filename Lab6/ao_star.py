@@ -112,7 +112,9 @@ def revise(node):
             if node.parent is not None:
                 revise(node.parent)
                 
+states = 0
 while root.type != 'solved':
+    states += 1
     pick = List[0]
     List.remove(pick)
 
@@ -122,6 +124,6 @@ while root.type != 'solved':
     revise(pick)
 
 if heutype == 0:
-    print('overi ', root.cost) 
+    print('overi ', root.cost, "\t", states) 
 else:
-    print('under ', root.cost) 
+    print('under ', root.cost, "\t", states) 
