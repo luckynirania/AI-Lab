@@ -3,21 +3,7 @@ data = list(map(int, ls.split()))
 
 N = len(data)
 
-def test(p, n): 
-    m = [[0 for x in range(n)] for x in range(n)] 
-    for i in range(1, n): 
-        m[i][i] = 0
-         
-    for L in range(2, n): 
-        for i in range(1, n-L+1): 
-            j = i+L-1
-            m[i][j] = float('inf')
-            for k in range(i, j): 
-                q = m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j] 
-                if q < m[i][j]: 
-                    m[i][j] = q 
-  
-    return m[1][n-1] 
+heutype = int(input())
 
 class NODE:
     contains = []
@@ -46,7 +32,7 @@ def h_over(node):
         node.type = 'terminal'
         ref = node.contains[0]
         return data[ref] * data[ref + 1] * data[ref + 2]
-    cost = N * data[node.contains[0]]
+    cost = N * N * data[node.contains[0]]
     for i in node.contains:
         cost = cost * data[i + 1]
     return cost
@@ -65,15 +51,25 @@ def gen_child(node):
         baby_A.parent = node
         baby_B.parent = node
 
-        baby_A.cost = h_under(baby_A)
-        baby_B.cost = h_under(baby_B)
+        if heutype == 0:
+            baby_A.cost = h_over(baby_A)
+            baby_B.cost = h_over(baby_B)
+        else:
+            baby_A.cost = h_under(baby_A)
+            baby_B.cost = h_under(baby_B)
 
         node.children.extend([baby_A, baby_B])
+
+        baby_A.children = []
+        baby_B.children = []
         
 
 root = NODE()
 root.contains = list(range(0, N - 1))
-root.cost = h_under(root)
+if heutype == 0:
+    root.cost = h_over(root)
+else:
+    root.cost = h_under(root)
 
 List = [root]
 
@@ -89,9 +85,7 @@ def revise(node):
     for i in range(0, len(node.children), 2):
         left = node.children[i]
         right = node.children[i].sibling
-
-        # print(right == node.children[i + 1])
-
+        
         cost = data[left.contains[0]] * data[right.contains[0]] * data[right.contains[-1] + 1]
 
         cost = cost + left.cost + right.cost
@@ -99,7 +93,7 @@ def revise(node):
         if mini > cost:
             mini = cost
             node.marked = left
-
+            
     node.cost = mini        
 
     if old_marked in List:
@@ -117,7 +111,7 @@ def revise(node):
             node.type = 'solved'
             if node.parent is not None:
                 revise(node.parent)
-
+                
 while root.type != 'solved':
     pick = List[0]
     List.remove(pick)
@@ -127,10 +121,7 @@ while root.type != 'solved':
 
     revise(pick)
 
-print('under ', root.cost, root.type) 
-node = root
-# while len(node.children) > 0:
-#     for i in range(0, len(node.children), 2):
-#         if node.children[i].type == 'solved':
-#             print
-print('dpsol ', test(data,N))
+if heutype == 0:
+    print('overi ', root.cost) 
+else:
+    print('under ', root.cost) 
