@@ -68,16 +68,16 @@ class GridWorld:
                 coord, reward = self._new_state_reward(a, state)
                 return coord, reward
 
-        """ uncomment for purely stochastic  
-        if action == '↑':
-            return stochastic_transition(['↑', '→', '←'], [0.8, 0.1, 0.1])
-        elif action == '↓':
-            return stochastic_transition(['↓', '→', '←'], [0.8, 0.1, 0.1])
-        elif action == '→':
-            return stochastic_transition(['→', '↑', '↓'], [0.8, 0.1, 0.1])
-        elif action == '←':
-            return stochastic_transition(['←', '↑', '↓'], [0.8, 0.1, 0.1])
-            """
+        """ uncomment for purely stochastic  """
+        # if action == '↑':
+        #     return stochastic_transition(['↑', '→', '←'], [0.8, 0.1, 0.1])
+        # elif action == '↓':
+        #     return stochastic_transition(['↓', '→', '←'], [0.8, 0.1, 0.1])
+        # elif action == '→':
+        #     return stochastic_transition(['→', '↑', '↓'], [0.8, 0.1, 0.1])
+        # elif action == '←':
+        #     return stochastic_transition(['←', '↑', '↓'], [0.8, 0.1, 0.1])
+            
 
 
         if action == '↑':

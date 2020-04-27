@@ -20,11 +20,12 @@ print()
 #   Policy Iteration
 print("Policy Iteration")
 
-episodes = 300
+episodes = 30
 epsilon = 0.05
 alpha = 0.5
 poli, V, stats, steps = policy.policy_iteration(MyGrid, episodes, epsilon, alpha, (1, 0), (3, 3))
 
+print("episodes", episodes)
 env.print_grid(MyGrid, poli)
 env.print_grid(MyGrid, V)
 print()

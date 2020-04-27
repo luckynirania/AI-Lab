@@ -3,7 +3,9 @@ import random
 
 POSSIBLE_ACTIONS = ['↑', '↓', '←', '→']
 
-def value_iteration(env, start, stop, discount_factor=0.99, threshold=0.001):
+gamma = 0.9
+
+def value_iteration(env, start, stop, discount_factor=gamma, threshold=0.001):
 
     def calculate_v(V, state, actions):
         """ V[s] = max[a]{ sum[s',r] { p(s',r|s,a)[r + gamma*V[s']] } }
@@ -93,8 +95,7 @@ def _epsilon_greedy(action, epsilon):
     else:
         return np.random.choice(POSSIBLE_ACTIONS, 1)[0]
 
-
-def policy_iteration(env, num_episodes, epsilon, alpha, start, stop, discount_factor=0.99):
+def policy_iteration(env, num_episodes, epsilon, alpha, start, stop, discount_factor=gamma):
     all_states = set(env.rewards.keys())
 
     # initialize Q[s][a]
@@ -139,6 +140,7 @@ def policy_iteration(env, num_episodes, epsilon, alpha, start, stop, discount_fa
             else:
                 policy_list.append('G')
             q_list.append(best_q)
+        # print(q_list)
 
         # add steps according to current policy to visualize agent's actions
         stats[episode] = {
